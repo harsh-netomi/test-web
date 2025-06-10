@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Segment Event Tracking</title>
+</head>
+<body>
+  <h1>Segment Test Page</h1>
+  <button id="trackButton">Click Me</button>
+
+  <script>
+    let segmentLoaded = false;
+
+    function getSegmentTokenFromEnv() {
+      // Replace with your actual write key
+      return "eDKUXTX9AudcP0DnFyeyMZwBrLX1W9Qq";
+    }
+
+    async function loadSegment() {
+      const analytics = (window.analytics = window.analytics || []);
+      if (!analytics.initialize && !segmentLoaded) {
+        segmentLoaded = true;
+        if (analytics.invoked) {
+          window.console && console.error && console.error("Segment snippet included twice.");
+        } else {
+          analytics.invoked = true;
+          analytics.methods = [
+            "trackSubmit", "trackClick", "trackLink", "trackForm", "pageview", "identify", "reset",
+            "group", "track", "ready", "alias", "debug", "page", "once", "off", "on",
+            "addSourceMiddleware", "addIntegrationMiddleware", "setAnonymousId", "addDestinationMiddleware"
+          ];
+          analytics.factory = function (method) {
+            return function () {
+              const args = Array.prototype.slice.call(arguments);
+              args.unshift(method);
+              analytics.push(args);
+              return analytics;
+            };
+          };
+          for (let i = 0; i < analytics.methods.length; i++) {
+            const key = analytics.methods[i];
+            analytics[key] = analytics.factory(key);
+          }
+          analytics.load = function (key, options) {
+            let script = document.createElement("script");
+            script.type = "text/javascript";
+            script.async = true;
+            script.src = "https://cdn.segment.com/analytics.js/v1/" + key + "/analytics.min.js";
+            script.id = "segment-script";
+            let first = document.getElementsByTagName("script")[0];
+            first.parentNode.insertBefore(script, first);
+            analytics._loadOptions = options;
+          };
+          analytics.SNIPPET_VERSION = "4.15.2";
+          analytics.load(getSegmentTokenFromEnv());
+        }
+      }
+    }
+
+    loadSegment();
+
+    // Track the click event
+    document.getElementById("trackButton").addEventListener("click", () => {
+      if (window.analytics && typeof analytics.track === "function") {
+        analytics.track("Button Clicked", {
+          category: "User Interaction",
+          label: "Track Button"
+        });
+        alert("Segment event sent: Button Clicked");
+      } else {
+        console.warn("Segment analytics not ready.");
+      }
+    });
+  </script>
+</body>
+</html>
