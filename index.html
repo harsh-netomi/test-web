@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF First & Last Page Extractor</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="app-header">
+            <h1>PDF First & Last Page Extractor</h1>
+            <p>Upload PDF files to keep only the first and last pages</p>
+        </header>
+
+        <main class="app-main">
+            <div class="upload-area">
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-content">
+                        <svg class="upload-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <h3>Drag & Drop PDF Files Here</h3>
+                        <p>or</p>
+                        <button class="btn btn-primary btn-upload" id="browseBtn">Choose Files</button>
+                        <input type="file" id="fileInput" accept=".pdf" multiple>
+                        <p class="file-hint">Supports multiple PDF files up to 20MB each</p>
+                    </div>
+                </div>
+                
+                <div class="file-selection-area" id="fileInfo" style="display: none;">
+                    <div class="file-selection-header">
+                        <h4>Selected Files</h4>
+                        <button class="btn btn-secondary" id="clearFilesBtn">Clear All</button>
+                    </div>
+                    <div class="file-list-container">
+                        <ul id="fileList"></ul>
+                    </div>
+                    <button class="btn btn-primary btn-process" id="processBtn">Process Selected Files</button>
+                </div>
+            </div>
+
+            <div class="progress-area" id="progressSection" style="display: none;">
+                <div class="progress-header">
+                    <h4>Processing Files</h4>
+                    <span id="progressText">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <div class="results-area" id="resultsSection" style="display: none;">
+                <div class="results-header">
+                    <h3>Processed Files</h3>
+                    <button class="btn btn-secondary" id="newProcessBtn">Process New Files</button>
+                </div>
+                <div class="results-container" id="resultsContainer"></div>
+            </div>
+
+            <div class="error-area" id="errorSection" style="display: none;">
+                <div class="error-message">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <div class="error-content">
+                        <h4>Error</h4>
+                        <p id="errorMessage"></p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>© 2025 PDF Processor | First & Last Page Extractor</p>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
