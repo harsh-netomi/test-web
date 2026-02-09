@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+</head>
+<style type="text/css">
+  button {
+    padding: 20px;
+    margin: 50px;
+  }
+</style>
+
+<script type="text/javascript">
+  function openWidget(source) {
+    console.log(source);
+    setVisitorInfo(source);
+    
+    const myTimeout = setTimeout(openwidget, 500);
+    
+  }
+
+  function openwidget() {
+    console.log('openwidget ');
+    Netomi.chat.openWidget();
+    var conversationInitiated = document.cookie.match(/(?:^|;\s*)net_conversationInitiated=([^;]+)/)?.[1];
+    console.log(conversationInitiated)
+    if(conversationInitiated == 'false') {
+          Netomi.chat.publish('SEND_MESSAGE_IN_WIDGET', {
+          text: "event://;SWITCH_INTENT;;TARGET_NODE::msgai.conversational.greetings.welcome",
+          label: "Welcome"
+      });
+   }
+    
+  }
+
+  function setVisitorInfo(button_source) {
+    window.NETOMI_WEB_WIDGET.publish('VISITOR_INFO', {
+        BUTTON_SOURCE: button_source
+    });
+  }
+
+  var botRefId = "5b0b6546-3247-4125-8a84-4d2332a2ac9c";
+
+
+  (function() {
+    var ns = document.createElement("script");
+    ns.src = "https://chatapps-us.netomi.com/app/script.js";
+    ns.type = "text/javascript";
+    ns.async = true;
+
+    ns.setAttribute("botRefId", botRefId);
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(ns, s);
+    ns.onload = function() {
+        Netomi.chat.onLoad(() => {
+        });
+        window.NETOMI_WEB_WIDGET.init(() => {
+            setVisitorInfo();
+        });
+    };
+})();
+</script>
+<body>
+
+
+  <button onclick="openWidget('start_chat')">Start Chat</button>
+  <button onclick="openWidget('call_us')">Call Us</button>
+
+</body>
+</html>
