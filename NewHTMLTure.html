@@ -22,8 +22,8 @@
 
   (function() {
     var ns = document.createElement('script');
-    ns.src = ('https://chatapps-dev1.netomi.com/app/script.js');ns.type = 'text/javascript'; ns.async = true;
-    ns.setAttribute('botRefId', 'c2c434a5-d5e6-405b-90ef-da244aa903ff');
+    ns.src = ('https://chatapps-qa.netomi.com/app/script.js');ns.type = 'text/javascript'; ns.async = true;
+    ns.setAttribute('botRefId', 'c343f3f2-59ed-4362-a9ac-6c93993e2e2a');
     ns.setAttribute('enableEventQueue', 'true');      // Need to set this flag true to enable event queue.
     var s = document.getElementsByTagName('script')[0];s.parentNode.insertBefore(ns, s);
     ns.onload = function () {window.Netomi.chat.init(() => {/* add publish events here */})}})();
@@ -49,12 +49,12 @@
     });
   }
 
-  var botRefId = "6dbe9a7d-1102-4a1b-89f1-eeea96fa2856";
+  var botRefId = "c343f3f2-59ed-4362-a9ac-6c93993e2e2a";
 
 
   (function() {
     var ns = document.createElement("script");
-    ns.src = "https://chatapps-eu.netomi.com/app/script.js";
+    ns.src = "https://chatapps-qa.netomi.com/app/script.js";
     ns.type = "text/javascript";
     ns.async = true;
 
