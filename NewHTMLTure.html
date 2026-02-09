@@ -20,14 +20,6 @@
     
   }
 
-  (function() {
-    var ns = document.createElement('script');
-    ns.src = ('https://chatapps-qa-b.netomi.com/app/script.js');ns.type = 'text/javascript'; ns.async = true;
-    ns.setAttribute('botRefId', '6f9d2245-e1eb-4872-a83e-42c9752bfac3');
-    ns.setAttribute('enableEventQueue', 'true');      // Need to set this flag true to enable
-    var s = document.getElementsByTagName('script')[0];s.parentNode.insertBefore(ns, s);
-    ns.onload = function () {window.Netomi.chat.init(() => {/* add publish events here */})}})();
-
 
   function openwidget() {
     console.log('openwidget ');
@@ -59,6 +51,7 @@
     ns.async = true;
 
     ns.setAttribute("botRefId", botRefId);
+    ns.setAttribute('enableEventQueue', 'true');  
     var s = document.getElementsByTagName("script")[0];
     s.parentNode.insertBefore(ns, s);
     ns.onload = function() {
