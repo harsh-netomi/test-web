@@ -1,0 +1,51 @@
+
+<!DOCTYPE html>
+<html lang="en-LU" data-market="lu-en" data-country="lu" data-lang="en" data-currency="EUR">
+<head>
+  <title></title>
+</head>
+<style type="text/css">
+  button {
+    padding: 20px;
+    margin: 50px;
+  }
+</style>
+
+<script type="text/javascript">
+  function openWidget(source) {
+    console.log(source);
+    window.Netomi.chat.showWidget();
+  }
+</script>
+<script type="text/javascript">
+
+var botRefId = "a5addd98-2627-437b-899c-2f97ff2e2b18";
+//  var botRefId = "b64eed24-0206-411e-a284-587b92c639da";
+(function() {
+    var ns = document.createElement("script");
+    ns.src = "https://chatapps-qa-a.netomi.com/app/script.js";
+    ns.type = "text/javascript";
+    ns.async = true;
+    //ns.setAttribute('enableEventQueue', 'true');
+    ns.setAttribute("botRefId", botRefId);
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(ns, s);
+    ns.onload = function() {
+        Netomi.chat.onLoad(() => {
+            window.Netomi.chat.hideWidget();
+            console.log('chat widget loaded');
+        });
+    };
+})();
+
+</script>
+<body>
+
+
+  <button onclick="openWidget('start_chat')">Start Chat</button>
+  <button onclick="openWidget('call_us')">Call Us</button>
+
+</body>
+</html>
+
+
