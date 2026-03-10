@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html lang="en-LU" data-market="lu-en" data-country="lu" data-lang="en" data-currency="EUR">
+<head>
+  <title></title>
+</head>
+<style type="text/css">
+  button {
+    padding: 20px;
+    margin: 50px;
+  }
+</style>
+
+<script type="text/javascript">
+  function openWidget(source) {
+    console.log(source);
+    window.Netomi.chat.showWidget();
+  }
+</script>
+<script type="text/javascript">
+
+var botRefId = "a5addd98-2627-437b-899c-2f97ff2e2b18";
+//  var botRefId = "b64eed24-0206-411e-a284-587b92c639da";
+(function() {
+    var ns = document.createElement("script");
+    ns.src = "https://chatapps-eu.netomi.com/app/script.js";
+    ns.type = "text/javascript";
+    ns.async = true;
+ns.setAttribute('enableEventQueue', 'true');
+    ns.setAttribute("botRefId", botRefId);
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(ns, s);
+    ns.onload = function() {
+        Netomi.chat.onLoad(() => {
+            var conversationId = document.cookie.match(/(?:^|;\s*)net_conversationId=([^;]+)/)?.[1];
+            fetch('https://hd-web-eu.netomi.com/v1/webapi/b6e1211f-3b95-470a-a0fc-96225bf2efd5', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        conversationId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Response:", data);
+
+                    if (data.endChat === 'true') {
+                        Netomi.chat.publish('SEND_MESSAGE_IN_WIDGET', {
+                            text: "stop the conversation",
+                            label: "end chat"
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.error("Error calling API:", err);
+                });
+            if (!hideWidgetCalled) {
+                hideWidgetCalled = true;
+                window.Netomi.chat.hideWidget();
+                console.log('chat widget loaded');
+            }
+            const subscribeNetomiEvents = window.NETOMI_WEB_WIDGET.subscribe;
+            subscribeNetomiEvents('NETOMI_FORM_SUBMIT_EVENT', function(data) {
+                console.log('Call back event captured', data);
+
+                if (data == 're-fetch-login') {
+                  console.log('refetching login details')
+                    setVisitorInfo();
+                } else {
+                  console.log('redirecting to login')
+                    isCustomEventTriggered = true;
+                    const myTimeout = setTimeout(redirectToLogin, 1000);
+                }
+            })
+        });
+        window.NETOMI_WEB_WIDGET.init(() => {
+            console.log('init')
+            setVisitorInfo();
+        });
+        window.NETOMI_WEB_WIDGET.onHumanHandoff(() => {
+            console.log('handoff initiated');
+        });
+    };
+})();
+
+function setVisitorInfo(button_source) {
+console.log('button_source ',button_source);
+  let pair = document.cookie.match(new RegExp('LOGIN_AUTH' + '=([^;]+)'));
+    console.log('cookie value ', pair)
+    let parsedData = !!pair ? parseJwt(pair[1]) : '';
+    let accessToken = (parsedData != '') ? pair[1] : '';
+    let customerSessionId = (parsedData["customerSessionId"] !== undefined) ? parsedData["customerSessionId"] : '';
+    console.log('customerSessionId ', customerSessionId)
+    let customerId = (parsedData["customerId"] !== undefined) ? parsedData["customerId"] : '';
+    let euroBonusNr = (parsedData["euroBonusNr"] !== undefined) ? parsedData["euroBonusNr"] : '';
+    window.NETOMI_WEB_WIDGET.publish('VISITOR_INFO', {
+        ACCESS_TOKEN: accessToken,
+        CUSTOMER_SESSION_ID: customerSessionId,
+        CUSTOMER_ID: customerId,
+        EURO_BONUS_NUMBER: euroBonusNr,
+        MARKET: userMarket,
+        USER_LANG: userLanguage,
+        USER_COUNTRY: userCountry,
+        LANG: document.getElementsByTagName('html')[0].getAttribute("lang"),
+        BUTTON_SOURCE: button_source
+    });
+}
+
+</script>
+<body>
+
+
+  <button onclick="openWidget('start_chat')">Start Chat</button>
+  <button onclick="openWidget('call_us')">Call Us</button>
+
+</body>
+</html>
+
+
