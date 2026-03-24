@@ -62,7 +62,7 @@
       id = setInterval(() => {
         window.NETOMI_WEB_WIDGET.authModule.jwtAuth(async sendTokenToNetomi => {
           
-          const tokenApiCall = await fetch('https://chatapps-qa-a.netomi.com/api/fetchJWT',  {
+          const tokenApiCall = await fetch('https://chatapps-eu.netomi.com/api/fetchJWT',  {
             method: 'post',
             headers: {
               'href':'https://revanshasti.github.io/Hosting-sites/Authentication.html',
