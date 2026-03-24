@@ -14,10 +14,10 @@
   <script>
     (function() {
       var ns = document.createElement('script');
-      ns.src = ('https://chatapps-eu.netomi.com/app/script.js');
+      ns.src = ('https://chatapps-sg.netomi.com/app/script.js');
       ns.type = 'text/javascript';
       ns.async = true;
-      ns.setAttribute('botRefId', 'c02fff2f-dcd8-4197-a098-4026f5ec6e59');
+      ns.setAttribute('botRefId', 'b462f607-c7f3-4630-80d3-7bc008880807');
       var s = document.getElementsByTagName('script')[0];
       s.parentNode.insertBefore(ns, s);
       ns.onload = function () {
@@ -30,13 +30,13 @@
     async function handleAuth() {
 
       async function renewToken() {
-        const tokenApiCall = await fetch('https://chatapps-eu.netomi.com/api/fetchJWT',  {
+        const tokenApiCall = await fetch('https://chatapps-sg.netomi.com/api/fetchJWT',  {
           method: 'post',
           headers: {
             'href':'https://revanshasti.github.io/Hosting-sites/Authentication.html',
             'Content-Type': 'application/json',
             'x-token-expiry': '1h',
-            'x-bot-ref-id':'c02fff2f-dcd8-4197-a098-4026f5ec6e59',
+            'x-bot-ref-id':'b462f607-c7f3-4630-80d3-7bc008880807',
             'x-user-details': JSON.stringify({"name": "Revan Shasti", "externalId": "revan@gmail.com"})
           }
         });
@@ -44,13 +44,13 @@
         return token;
       }
     
-      const tokenApiCall = await fetch('https://chatapps-eu.netomi.com/api/fetchJWT',  {
+      const tokenApiCall = await fetch('https://chatapps-sg.netomi.com/api/fetchJWT',  {
         method: 'post', 
         headers: { 
           'href':'https://revanshasti.github.io/Hosting-sites/Authentication.html',
           'Content-Type': 'application/json', 
           'x-token-expiry': '1h', 
-          'x-bot-ref-id':'c02fff2f-dcd8-4197-a098-4026f5ec6e59', 
+          'x-bot-ref-id':'b462f607-c7f3-4630-80d3-7bc008880807', 
           'x-user-details': JSON.stringify({"name": "Revan Shasti", "externalId": "revan@gmail.com"}) 
         }
       });
@@ -62,13 +62,13 @@
       id = setInterval(() => {
         window.NETOMI_WEB_WIDGET.authModule.jwtAuth(async sendTokenToNetomi => {
           
-          const tokenApiCall = await fetch('https://chatapps-eu.netomi.com/api/fetchJWT',  {
+          const tokenApiCall = await fetch('https://chatapps-sg.netomi.com/api/fetchJWT',  {
             method: 'post',
             headers: {
               'href':'https://revanshasti.github.io/Hosting-sites/Authentication.html',
               'Content-Type': 'application/json',
               'x-token-expiry': '1h',
-              'x-bot-ref-id':'c02fff2f-dcd8-4197-a098-4026f5ec6e59',
+              'x-bot-ref-id':'b462f607-c7f3-4630-80d3-7bc008880807',
               'x-user-details': JSON.stringify({"name": "Revan Shasti", "externalId": "revan@gmail.com"})
             }
           });
