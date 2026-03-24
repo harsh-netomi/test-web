@@ -14,10 +14,10 @@
   <script>
     (function() {
       var ns = document.createElement('script');
-      ns.src = ('https://chatapps-qa-a.netomi.com/app/script.js');
+      ns.src = ('https://chatapps-eu.netomi.com/app/script.js');
       ns.type = 'text/javascript';
       ns.async = true;
-      ns.setAttribute('botRefId', '6f9d2245-e1eb-4872-a83e-42c9752bfac3');
+      ns.setAttribute('botRefId', 'b64eed24-0206-411e-a284-587b92c639da');
       var s = document.getElementsByTagName('script')[0];
       s.parentNode.insertBefore(ns, s);
       ns.onload = function () {
@@ -30,13 +30,13 @@
     async function handleAuth() {
 
       async function renewToken() {
-        const tokenApiCall = await fetch('https://chatapps-qa-a.netomi.com/api/fetchJWT',  {
+        const tokenApiCall = await fetch('https://chatapps-eu.netomi.com/api/fetchJWT',  {
           method: 'post',
           headers: {
             'href':'https://revanshasti.github.io/Hosting-sites/Authentication.html',
             'Content-Type': 'application/json',
             'x-token-expiry': '1h',
-            'x-bot-ref-id':'6f9d2245-e1eb-4872-a83e-42c9752bfac3',
+            'x-bot-ref-id':'b64eed24-0206-411e-a284-587b92c639da',
             'x-user-details': JSON.stringify({"name": "Revan Shasti", "externalId": "revan@gmail.com"})
           }
         });
@@ -44,13 +44,13 @@
         return token;
       }
     
-      const tokenApiCall = await fetch('https://chatapps-qa-a.netomi.com/api/fetchJWT',  {
+      const tokenApiCall = await fetch('https://chatapps-eu.netomi.com/api/fetchJWT',  {
         method: 'post', 
         headers: { 
           'href':'https://revanshasti.github.io/Hosting-sites/Authentication.html',
           'Content-Type': 'application/json', 
           'x-token-expiry': '1h', 
-          'x-bot-ref-id':'6f9d2245-e1eb-4872-a83e-42c9752bfac3', 
+          'x-bot-ref-id':'b64eed24-0206-411e-a284-587b92c639da', 
           'x-user-details': JSON.stringify({"name": "Revan Shasti", "externalId": "revan@gmail.com"}) 
         }
       });
@@ -68,7 +68,7 @@
               'href':'https://revanshasti.github.io/Hosting-sites/Authentication.html',
               'Content-Type': 'application/json',
               'x-token-expiry': '1h',
-              'x-bot-ref-id':'6f9d2245-e1eb-4872-a83e-42c9752bfac3',
+              'x-bot-ref-id':'b64eed24-0206-411e-a284-587b92c639da',
               'x-user-details': JSON.stringify({"name": "Revan Shasti", "externalId": "revan@gmail.com"})
             }
           });
