@@ -14,10 +14,10 @@
   <script>
     (function() {
       var ns = document.createElement('script');
-      ns.src = ('https://chatapps-sg.netomi.com/app/script.js');
+      ns.src = ('https://chatapps-us.netomi.com/app/script.js');
       ns.type = 'text/javascript';
       ns.async = true;
-      ns.setAttribute('botRefId', 'b462f607-c7f3-4630-80d3-7bc008880807');
+      ns.setAttribute('botRefId', '938dcb64-4141-4347-984b-1090f15c66a1');
       var s = document.getElementsByTagName('script')[0];
       s.parentNode.insertBefore(ns, s);
       ns.onload = function () {
@@ -30,13 +30,13 @@
     async function handleAuth() {
 
       async function renewToken() {
-        const tokenApiCall = await fetch('https://chatapps-sg.netomi.com/api/fetchJWT',  {
+        const tokenApiCall = await fetch('https://chatapps-us.netomi.com/api/fetchJWT',  {
           method: 'post',
           headers: {
             'href':'https://harsh-netomi.github.io/test-web/TURE-JWT.html',
             'Content-Type': 'application/json',
             'x-token-expiry': '1h',
-            'x-bot-ref-id':'b462f607-c7f3-4630-80d3-7bc008880807',
+            'x-bot-ref-id':'938dcb64-4141-4347-984b-1090f15c66a1',
             'x-user-details': JSON.stringify({"name": "Revan Shasti", "externalId": "revan@gmail.com"})
           }
         });
@@ -44,13 +44,13 @@
         return token;
       }
     
-      const tokenApiCall = await fetch('https://chatapps-sg.netomi.com/api/fetchJWT',  {
+      const tokenApiCall = await fetch('https://chatapps-us.netomi.com/api/fetchJWT',  {
         method: 'post', 
         headers: { 
           'href':'https://harsh-netomi.github.io/test-web/TURE-JWT.html',
           'Content-Type': 'application/json', 
           'x-token-expiry': '1h', 
-          'x-bot-ref-id':'b462f607-c7f3-4630-80d3-7bc008880807', 
+          'x-bot-ref-id':'938dcb64-4141-4347-984b-1090f15c66a1', 
           'x-user-details': JSON.stringify({"name": "Revan Shasti", "externalId": "revan@gmail.com"}) 
         }
       });
@@ -62,13 +62,13 @@
       id = setInterval(() => {
         window.NETOMI_WEB_WIDGET.authModule.jwtAuth(async sendTokenToNetomi => {
           
-          const tokenApiCall = await fetch('https://chatapps-sg.netomi.com/api/fetchJWT',  {
+          const tokenApiCall = await fetch('https://chatapps-us.netomi.com/api/fetchJWT',  {
             method: 'post',
             headers: {
               'href':'https://harsh-netomi.github.io/test-web/TURE-JWT.html',
               'Content-Type': 'application/json',
               'x-token-expiry': '1h',
-              'x-bot-ref-id':'b462f607-c7f3-4630-80d3-7bc008880807',
+              'x-bot-ref-id':'938dcb64-4141-4347-984b-1090f15c66a1',
               'x-user-details': JSON.stringify({"name": "Revan Shasti", "externalId": "revan@gmail.com"})
             }
           });
