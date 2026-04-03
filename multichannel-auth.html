@@ -14,14 +14,14 @@
 
   (function() {
     var ns = document.createElement('script');
-    ns.src = ('https://chatapps-qa-a.netomi.com/app/script.js');ns.type = 'text/javascript'; ns.async = true;
-    ns.setAttribute('botRefId', 'a69debff-1dff-407e-9d1d-77a3ad111647');
-
+    ns.src = ('https://chatapps-us.netomi.com/app/script.js');ns.type = 'text/javascript'; ns.async = true;
+    ns.setAttribute('botRefId', '5f40b871-024f-4a03-8e55-54c5a9541207');
+    //ns.setAttribute('enableEventQueue', 'true');
     const queryString = window.location.search;
     const params = new URLSearchParams(queryString);
-    const conversationId = params.get('convId');
+    //const conversationId = params.get('convId');
     const phoneNumber = params.get('phoneNumber');
-    ns.setAttribute('convId', conversationId);
+    //ns.setAttribute('convId', conversationId);
 
     const header = { alg: "HS256", typ: "JWT" }
     const payload = { sub: phoneNumber }
@@ -32,10 +32,13 @@
     ns.onload = function () {
         window.Netomi.chat.init(() => {
           console.log(token);
-          Netomi.chat.oauth.login({ access_token: token });
+          setTimeout(() => {
+               Netomi.chat.oauth.login({ access_token: token });
+          }, 10000);
           Netomi.chat.openWidget();
-        });
+            });
     }
+
     })();
 </script>
 
