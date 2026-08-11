@@ -1,73 +1,137 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <title></title>
-</head>
-<style type="text/css">
-  button {
-    padding: 20px;
-    margin: 50px;
-  }
-</style>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title></title>
 
-<script type="text/javascript">
-  function openWidget(source) {
-    console.log(source);
-    setVisitorInfo(source);
-    
-    // const myTimeout = setTimeout(openwidget, 500);
-    openwidget()
-    
-  }
+    <!--
+      NET-65437 repro page.
 
+      This is the client's own integration, copied as-is. Three things differ,
+      all of them forced by running locally and marked LOCAL ONLY below:
+        1. ns.src is /script.js instead of the chatapps-us URL
+        2. the debug attribute is added
+        3. fetchJWT is called on /api/fetchJWT instead of the absolute URL
 
-  function openwidget() {
-    console.log('openwidget ');
-    Netomi.chat.openWidget();
-    var conversationInitiated = document.cookie.match(/(?:^|;\s*)net_conversationInitiated=([^;]+)/)?.[1];
-    console.log(conversationInitiated)
-    if(conversationInitiated == 'false') {
-          Netomi.chat.publish('SEND_MESSAGE_IN_WIDGET', {
-          text: "event://;SWITCH_INTENT;;TARGET_NODE::msgai.conversational.greetings.welcome",
-          label: "Welcome"
-      });
-   }
-    
-  }
+      To reproduce: escalate to an agent, wait for them to join
+      (net_controlType in localStorage becomes AGENT), then reload the page.
+      login() runs once per page load from the init callback below, and that is
+      what used to knock controlType back to BOT.
+    -->
+    <script>
+      ;(function () {
+        var ns = document.createElement('script')
+        // LOCAL ONLY: served by webpack-dev-server out of test/
+        ns.src = '/script.js'
+        ns.type = 'text/javascript'
+        ns.async = true
+        ns.setAttribute('botRefId', '3d51f888-5c9a-4e35-bd86-b4cb8cd00f12')
+        ns.setAttribute('enableEventQueue', 'true')
+        // LOCAL ONLY: LoadIframe only takes the localhost branch when
+        // hostname === 'localhost' && debug === 'true'. Without this it runs
+        // new URL('/script.js'), which throws, and the widget never loads.
+        ns.setAttribute('debug', 'true')
 
-  function setVisitorInfo(button_source) {
-    window.NETOMI_WEB_WIDGET.publish('VISITOR_INFO', {
-        BUTTON_SOURCE: button_source
-    });
-  }
+        var s = document.getElementsByTagName('script')[0]
+        s.parentNode.insertBefore(ns, s)
+        ns.onload = function () {
+          authenticate()
+          // window.Netomi.chat.init(() => {
+          // })
+          // Netomi.chat.onLoad(() => {
+          //   authenticate()
+          // })
+        }
+      })()
 
-  var botRefId = "9627f97c-397a-42a1-8be7-a1b67ed31189";
+      let reAuthenticateIntervalId = ''
+      async function authenticate() {
+        const token = await fetchToken()
+        if (token != '') {
+          Netomi.chat.login(token)
+        }
 
+        reAuthenticateIntervalId = setInterval(() => {
+          Netomi.chat.authenticate(async (sendTokenToNetomi) => {
+            const token = await fetchToken()
+            if (token != '') {
+              sendTokenToNetomi(token, handleAuthError)
+            }
+          })
+        }, 55000)
+      }
 
-  (function() {
-    var ns = document.createElement("script");
-    ns.src = "https://chatapps-qa.netomi.com/app/script.js";
-    ns.type = "text/javascript";
-    ns.async = true;
+      async function fetchToken() {
+        // LOCAL ONLY: /api is proxied to the node server by webpack.local.conf
+        const tokenApiCall = await fetch('/api/fetchJWT', {
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-token-expiry': '1m',
+            'x-bot-ref-id': '3d51f888-5c9a-4e35-bd86-b4cb8cd00f12',
+            'x-user-details': JSON.stringify({
+              uname: 'John',
+              externalId: 'random@random1',
+              metadata: {
+                Name: 'John Doe',
+                ID: 'NET9879',
+                Organization: 'ABCSamples',
+                curTime: new Date().toLocaleTimeString(),
+                Location: {
+                  City: 'Chicago',
+                  State: 'Illinois'
+                }
+              }
+            })
+          }
+        })
+        const { token } = await tokenApiCall.json()
 
-    ns.setAttribute("botRefId", botRefId);
-    ns.setAttribute('enableEventQueue', 'true');  
-    var s = document.getElementsByTagName("script")[0];
-    s.parentNode.insertBefore(ns, s);
-    ns.onload = function() {
-        Netomi.chat.onLoad(() => {
-        });
-        window.NETOMI_WEB_WIDGET.init(() => {
-            setVisitorInfo();
-        });
-    };
-})();
-</script>
-<body>
+        console.log(token)
+        return token
+      }
 
+      function handleAuthError() {
+        /*
+          Clients will perform necessary actions in this function, which will be
+          called by netomi upon token expiration or not receiving a refresh
+          token.
+        */
+        console.log('handleAuthError')
+      }
 
-  <button onclick="openWidget('start_chat')">Start Chat</button>
-  <button onclick="openWidget('call_us')">Call Us</button>
+      function endAuth() {
+        clearInterval(reAuthenticateIntervalId)
+        Netomi.chat.logout()
+      }
 
-</body>
+      async function manualLogin() {
+        const token = await fetchToken()
+        if (token != '') {
+          Netomi.chat.login(token)
+        }
+      }
+
+      function clearAuth() {
+        Object.keys(localStorage)
+          .filter((key) => key.startsWith('net_'))
+          .forEach((key) => localStorage.removeItem(key))
+
+        document.cookie.split(';').forEach((cookie) => {
+          const name = cookie.split('=')[0].trim()
+          if (name.startsWith('net_')) {
+            document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`
+          }
+        })
+
+        location.reload()
+      }
+    </script>
+  </head>
+  <body>
+    <button onclick="manualLogin()">Login</button>
+    <button onclick="endAuth()">Logout</button>
+    <button onclick="clearAuth()">Clear Auth</button>
+  </body>
 </html>
