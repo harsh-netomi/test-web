@@ -23,7 +23,7 @@
       ;(function () {
         var ns = document.createElement('script')
         // LOCAL ONLY: served by webpack-dev-server out of test/
-        ns.src = '/script.js'
+        ns.src = 'https://chatapps-qa-a.netomi.com/app/script.js'
         ns.type = 'text/javascript'
         ns.async = true
         ns.setAttribute('botRefId', '3d51f888-5c9a-4e35-bd86-b4cb8cd00f12')
@@ -64,7 +64,7 @@
 
       async function fetchToken() {
         // LOCAL ONLY: /api is proxied to the node server by webpack.local.conf
-        const tokenApiCall = await fetch('/api/fetchJWT', {
+        const tokenApiCall = await fetch('https://chatapps-qa-a.netomi.com/api/fetchJWT', {
           method: 'post',
           headers: {
             'Content-Type': 'application/json',
