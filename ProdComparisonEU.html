@@ -23,7 +23,9 @@
       ns.onload = function () {
         var authStarted = false;
 
-        Netomi.chat.onLoad(authenticate);
+        Netomi.chat.onLoad(() => {
+            console.log('1: netomi onLoad being called')
+        });
       };
 
       var s = document.getElementsByTagName('script')[0];
@@ -32,6 +34,7 @@
       var reAuthenticateIntervalId = null;
 
       async function authenticate() {
+        console.log('2: log is being called')
         // Do not expose a real JWT directly in client-side source code.
         // Replace this with your valid token only for testing.
         const token = '';
