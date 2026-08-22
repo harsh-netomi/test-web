@@ -23,12 +23,7 @@
       ns.onload = function () {
         var authStarted = false;
 
-        Netomi.chat.onLoad(function () {
-          if (authStarted) return;
-
-          authStarted = true;
-          authenticate();
-        });
+        Netomi.chat.onLoad(authenticate);
       };
 
       var s = document.getElementsByTagName('script')[0];
