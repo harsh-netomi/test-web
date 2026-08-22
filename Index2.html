@@ -20,7 +20,7 @@
 
   let reAuthenticateIntervalId = ''
   async function authenticate() {
-      const token = await fetchToken()
+      const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJOZXRvbWkiLCJpc3MiOiJTZXJ2aWNlIFBvcnRhbCIsIm5hbWUiOiJBcnVuIEsiLCJleHRlcm5hbElkIjoiNWQxYzMwZTctYWE0NS00ZWI5LWI1NzEtZTkwNTJiN2E1Yzg3IiwiZXhwIjoxNzg3Mzk5ODE3LCJpYXQiOjE3ODczOTk3NTcsImVtYWlsIjoiYS5rYWxhZXN3YXJhbkBtaW1pYy1kay5jb20iLCJqdGkiOiJkYWNkYTU2MS0yNTkwLTRkMmEtOGMzOC1hMTAyZTNhMjVjMmYifQ.gTb24-JUcemadNPVsdngmikDA9KywdX78c9h8_a2gAIhQ2zrPS56kTIur4bm7z3Bv8Fxz3ZbBbYmtOzWfl8UCKF4uNssdr8ymwmBQOOf70_1WT-FP5cFpRFaUmI0KWfzCcAcsW1DtOVxFTMWcbq8Zm5KPFHiU9tHnH1KKgjW1pL3abf-ER6KPFyxbWGulVYotcmTpBPP8rPU3SGaLMCGuBlOBAs9UfQb8x4ImhDCDJ7P0Q8owoQKOBw4s8vMyTOgLybd353gnluxGw1K0dXf3Sh4SQ_6gixfQb4PTlMcsyjThzJTqTdavtI1P4tSKbEAZuJDDmCGJJWT_bktzPcm2g"
       if(token != '') {
         Netomi.chat.login(token)
       }
