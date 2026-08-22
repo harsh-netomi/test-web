@@ -1,19 +1,93 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-<meta name="RATING" content="RTA-5042-1996-1400-1577-RTA" /></head>
-<body>
-    <button onclick="Netomi.chat.openWidget()">Support</button>
-    <script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+
+  <script>
+
   (function() {
     var ns = document.createElement('script');
-    ns.src = ('https://chatapps-qa-a.netomi.com/app/script.js');ns.type = 'text/javascript'; ns.async = true;
-    ns.setAttribute('botRefId', '3690a03d-4748-4cf3-9abd-fa2bd61beb67');
+    ns.src = ('https://chatapps-us.netomi.com/app/script.js');ns.type = 'text/javascript'; ns.async = true;
+    ns.setAttribute('botRefId', '02b8581e-4b00-4aff-95b8-6bde44c1b688');
+   ns.setAttribute('enableEventQueue', 'true');
+
     var s = document.getElementsByTagName('script')[0];s.parentNode.insertBefore(ns, s);
-    ns.onload = function () {window.Netomi.chat.init(() => {/* add publish events here */})}})();
+    ns.onload = function () {
+      authenticate();
+    }})();
+
+  let reAuthenticateIntervalId = ''
+  async function authenticate() {
+      const token = await fetchToken()
+      if(token != '') {
+        Netomi.chat.login(token)
+      }
+
+      reAuthenticateIntervalId = setInterval(() => {
+        Netomi.chat.authenticate(async sendTokenToNetomi => {
+          const token = await fetchToken()
+          if(token != '') {
+            sendTokenToNetomi(token, handleAuthError);
+          }
+        })
+      },55000)
+
+
+  }
+
+
+  async function fetchToken(){
+
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const login = urlParams.get('login');
+    let token = "";
+
+    if(login == 'true') {
+      const tokenApiCall = await fetch('https://chatapps-us.netomi.com/api/fetchJWT',  {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-token-expiry': '1m',
+          'x-bot-ref-id':'02b8581e-4b00-4aff-95b8-6bde44c1b688',
+          'x-user-details': JSON.stringify({"uname": "John", "externalId": "random@random1", "metadata": {
+            "Name": "John Doe",
+            "ID": "NET9879",
+            "Organization": "ABCSamples",
+            "curTime":new Date().toLocaleTimeString(),
+            "Location": {
+              "City": "Chicago",
+              "State": "Illinois"
+            }
+          }})
+        }})
+      const resp = await tokenApiCall.json()
+      token = resp.token;
+    }
+
+    console.log('token ' + token);
+    return token;
+  }
+
+  function handleAuthError() {
+    /*
+  Clients will perform necessary actions in this function, which will be called by netomi upon token expiration or not receiving a refresh token.
+*/
+    console.log('handleAuthError')
+  }
+
+
+  // function endAuth() {
+  //   clearInterval(reAuthenticateIntervalId)
+  //   Netomi.chat.logout();
+
+  // }
 </script>
+</head>
+<body>
+
+
+</body>
 </html>
