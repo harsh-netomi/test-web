@@ -35,30 +35,38 @@
       var reAuthenticateIntervalId = null;
 
       async function authenticate() {
-        console.log('2: log is being called')
-        // Do not expose a real JWT directly in client-side source code.
-        // Replace this with your valid token only for testing.
-        const token = '';
+  console.log('2: authenticate() called');
+
+  const token = await fetchToken();
+
+  console.log('Token received:', token !== '');
+
+  if (token !== '') {
+    console.log('3: calling Netomi.chat.login()');
+
+    Netomi.chat.login(token);
+
+    console.log('4: Netomi.chat.login() returned');
+  } else {
+    console.log('3: NO TOKEN - login() will not be called');
+  }
+
+  // refresh
+  reAuthenticateIntervalId = setInterval(function () {
+    Netomi.chat.authenticate(async function (sendTokenToNetomi) {
+      try {
+        const token = await fetchToken();
 
         if (token !== '') {
-          Netomi.chat.login(token);
+          sendTokenToNetomi(token, handleAuthError);
         }
-
-        reAuthenticateIntervalId = setInterval(function () {
-          Netomi.chat.authenticate(async function (sendTokenToNetomi) {
-            try {
-              const token = await fetchToken();
-
-              if (token !== '') {
-                sendTokenToNetomi(token, handleAuthError);
-              }
-            } catch (error) {
-              console.error('Token refresh failed:', error);
-              handleAuthError();
-            }
-          });
-        }, 55000);
+      } catch (error) {
+        console.error('Token refresh failed:', error);
+        handleAuthError();
       }
+    });
+  }, 55000);
+}
 
       async function fetchToken() {
         const queryString = window.location.search;
