@@ -1,73 +1,89 @@
+
 <!DOCTYPE html>
-<html>
-<head>
-  <title></title>
-</head>
-<style type="text/css">
-  button {
-    padding: 20px;
-    margin: 50px;
-  }
-</style>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Standards" />
+    <title>Web Chat</title>
+  </head>
+  <body>
+    <button onclick="handleAuth()">Start Authentication</button>
+    <button onclick="endAuth()">Clear Authentication</button>
+  </body>
 
-<script type="text/javascript">
-  function openWidget(source) {
-    console.log(source);
-    setVisitorInfo(source);
+  <script>
+    (function() {
+      var ns = document.createElement('script');
+      ns.src = ('https://chatapps-qa-a.netomi.com/app/script.js');
+      ns.type = 'text/javascript';
+      ns.async = true;
+      ns.setAttribute('botRefId', 'a5addd98-2627-437b-899c-2f97ff2e2b18');
+      ns.setAttribute('isDynamicEnv', 'false');
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(ns, s);
+      ns.onload = function () {
+        window.NETOMI_WEB_WIDGET.init(() => { /* add publish events here */ })
+      }
+    })();
+  
+    let id = null;
+
+    async function handleAuth() {
+
+      async function renewToken() {
+        const tokenApiCall = await fetch('https://chatapps-qa-a.netomi.com/api/fetchJWT',  {
+          method: 'post',
+          headers: {
+            'href':'https://revanshasti.github.io/Hosting-sites/Authentication.html',
+            'Content-Type': 'application/json',
+            'x-token-expiry': '10m',
+            'x-bot-ref-id':'a5addd98-2627-437b-899c-2f97ff2e2b18',
+            'x-user-details': JSON.stringify({"name": "Revan Shasti", "externalId": "revan@gmail.com"})
+          }
+        });
+        const { token } = await tokenApiCall.json();
+        return token;
+      }
     
-    // const myTimeout = setTimeout(openwidget, 500);
-    openwidget()
-    
-  }
-
-
-  function openwidget() {
-    console.log('openwidget ');
-    Netomi.chat.openWidget();
-    var conversationInitiated = document.cookie.match(/(?:^|;\s*)net_conversationInitiated=([^;]+)/)?.[1];
-    console.log(conversationInitiated)
-    if(conversationInitiated == 'false') {
-          Netomi.chat.publish('SEND_MESSAGE_IN_WIDGET', {
-          text: "event://;SWITCH_INTENT;;TARGET_NODE::msgai.conversational.greetings.welcome",
-          label: "Welcome"
+      const tokenApiCall = await fetch('https://chatapps-qa-a.netomi.com/api/fetchJWT',  {
+        method: 'post', 
+        headers: { 
+          'href':'https://revanshasti.github.io/Hosting-sites/Authentication.html',
+          'Content-Type': 'application/json', 
+          'x-token-expiry': '10m', 
+          'x-bot-ref-id':'a5addd98-2627-437b-899c-2f97ff2e2b18', 
+          'x-user-details': JSON.stringify({"name": "Revan Shasti", "externalId": "revan@gmail.com"}) 
+        }
       });
-   }
-    
-  }
 
-  function setVisitorInfo(button_source) {
-    window.NETOMI_WEB_WIDGET.publish('VISITOR_INFO', {
-        BUTTON_SOURCE: button_source
-    });
-  }
+      const { token } = await tokenApiCall.json();
 
-  var botRefId = "c2c434a5-d5e6-405b-90ef-da244aa903ff";
+      window.NETOMI_WEB_WIDGET.authModule.login(token);
 
+      id = setInterval(() => {
+        window.NETOMI_WEB_WIDGET.authModule.jwtAuth(async sendTokenToNetomi => {
+          
+          const tokenApiCall = await fetch('https://chatapps-qa-a.netomi.com/api/fetchJWT',  {
+            method: 'post',
+            headers: {
+              'href':'https://revanshasti.github.io/Hosting-sites/Authentication.html',
+              'Content-Type': 'application/json',
+              'x-token-expiry': '10m',
+              'x-bot-ref-id':'a5addd98-2627-437b-899c-2f97ff2e2b18',
+              'x-user-details': JSON.stringify({"name": "Revan Shasti", "externalId": "revan@gmail.com"})
+            }
+          });
 
-  (function() {
-    var ns = document.createElement("script");
-    ns.src = "https://chatapps-dev1.netomi.com/app/script.js";
-    ns.type = "text/javascript";
-    ns.async = true;
+          const tokenResp = await tokenApiCall.json();
+          sendTokenToNetomi(tokenResp, renewToken);
+        })      
+      }, 300000);
+    }
 
-    ns.setAttribute("botRefId", botRefId);
-    ns.setAttribute('enableEventQueue', 'true');  
-    var s = document.getElementsByTagName("script")[0];
-    s.parentNode.insertBefore(ns, s);
-    ns.onload = function() {
-        Netomi.chat.onLoad(() => {
-        });
-        window.NETOMI_WEB_WIDGET.init(() => {
-            setVisitorInfo();
-        });
-    };
-})();
-</script>
-<body>
-
-
-  <button onclick="openWidget('start_chat')">Start Chat</button>
-  <button onclick="openWidget('call_us')">Call Us</button>
-
-</body>
+    function endAuth() {
+      clearInterval(id);
+      window.NETOMI_WEB_WIDGET.authModule.logout();
+    }
+  </script>
 </html>
