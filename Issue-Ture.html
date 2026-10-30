@@ -4,7 +4,6 @@
   var ns = document.createElement('script');
   ns.src = 'https://chatapps-qa-a.netomi.com/app/script.js';
   ns.async = true;
-  ns.setAttribute('id', 'a5addd98-2627-437b-899c-2f97ff2e2b18');
   ns.setAttribute('enableEventQueue', 'true');
 
   var s = document.getElementsByTagName('script')[0] || document.body;
@@ -15,12 +14,12 @@
 
     if (window.NETOMI_WEB_WIDGET) {
 
-      // Initialize Netomi widget
+      // Initialize widget
       window.NETOMI_WEB_WIDGET.init(() => {
         console.log("Widget initialized");
       });
 
-      // Handle initialization errors
+      // Initialization error handler
       Netomi.chat.onInitError(function (error) {
         console.log(
           error.exceptionCode,
@@ -29,7 +28,7 @@
         );
       });
 
-      // Handle chat errors
+      // Chat error handler
       Netomi.chat.onError(function (error) {
         console.log(
           error.event_sub_type,
