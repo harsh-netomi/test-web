@@ -1,72 +1,193 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title></title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Netomi Web Chat - Authentication Test</title>
 </head>
-<style type="text/css">
-  button {
-    padding: 20px;
-    margin: 50px;
-  }
-</style>
 
-<script type="text/javascript">
-  function openWidget(source) {
-    console.log(source);
-    setVisitorInfo(source);
-    
-    // const myTimeout = setTimeout(openwidget, 500);
-    openwidget()
-    
-  }
-
-
-  function openwidget() {
-    console.log('openwidget ');
-    Netomi.chat.openWidget();
-    var conversationInitiated = document.cookie.match(/(?:^|;\s*)net_conversationInitiated=([^;]+)/)?.[1];
-    console.log(conversationInitiated)
-    if(conversationInitiated == 'false') {
-          Netomi.chat.publish('SEND_MESSAGE_IN_WIDGET', {
-          text: "event://;SWITCH_INTENT;;TARGET_NODE::msgai.conversational.greetings.welcome",
-          label: "Welcome"
-      });
-   }
-    
-  }
-
-  function setVisitorInfo(button_source) {
-    window.NETOMI_WEB_WIDGET.publish('VISITOR_INFO', {
-        BUTTON_SOURCE: button_source
-    });
-  }
-
-  var botRefId = "a5addd98-2627-437b-899c-2f97ff2e2b18";
-
-
-  (function() {
-    var ns = document.createElement("script");
-    ns.src = "https://chatapps-qa-a.netomi.com/app/script.js";
-    ns.type = "text/javascript";
-    ns.async = true;
-
-    ns.setAttribute("botRefId", botRefId);  
-    var s = document.getElementsByTagName("script")[0];
-    s.parentNode.insertBefore(ns, s);
-    ns.onload = function() {
-        Netomi.chat.onLoad(() => {
-        });
-        window.NETOMI_WEB_WIDGET.init(() => {
-            setVisitorInfo();
-        });
-    };
-})();
-</script>
 <body>
+  <button type="button" onclick="handleAuth()">Start Authentication</button>
+  <button type="button" onclick="endAuth()">Clear Authentication</button>
 
+  <script>
+    // Set to null or '' when no bot reference ID should be supplied.
+    // The botRefId attribute and x-bot-ref-id header will then be omitted.
+    const BOT_REF_ID = null;
 
-  <button onclick="openWidget('start_chat')">Start Chat</button>
-  <button onclick="openWidget('call_us')">Call Us</button>
+    const TOKEN_EXPIRY = '55s';
+    const REFRESH_INTERVAL = 50000; // 50 seconds
 
+    const USER_DETAILS = {
+      name: 'Revan Shasti',
+      externalId: 'revan@gmail.com'
+    };
+
+    let refreshIntervalId = null;
+
+    // Load and initialize the Netomi widget.
+    (function loadNetomiWidget() {
+      const ns = document.createElement('script');
+      ns.src = 'https://chatapps-qa-a.netomi.com/app/script.js';
+      ns.type = 'text/javascript';
+      ns.async = true;
+
+      if (BOT_REF_ID !== null && String(BOT_REF_ID).trim() !== '') {
+        ns.setAttribute('botRefId', String(BOT_REF_ID).trim());
+      }
+
+      ns.setAttribute('isDynamicEnv', 'false');
+
+      ns.onload = function () {
+        if (!window.NETOMI_WEB_WIDGET) {
+          console.error('Netomi widget script loaded, but NETOMI_WEB_WIDGET is unavailable.');
+          return;
+        }
+
+        window.NETOMI_WEB_WIDGET.init(() => {
+          // Register SDK event handlers after the widget has initialized.
+          if (window.Netomi && window.Netomi.chat) {
+            window.Netomi.chat.onInitError(function (error) {
+              console.error(
+                'Netomi initialization error:',
+                error && error.exceptionCode,
+                error && error.statusCode,
+                error && error.statusMessage
+              );
+            });
+
+            window.Netomi.chat.onError(function (error) {
+              console.error(
+                'Netomi chat error:',
+                error && error.event_sub_type,
+                error && error.exceptionCode,
+                error && error.statusMessage
+              );
+            });
+          } else {
+            console.warn('Netomi.chat is not available; chat error handlers were not registered.');
+          }
+
+          // Add publish events here if required.
+        });
+      };
+
+      ns.onerror = function () {
+        console.error('Failed to load the Netomi widget script.');
+      };
+
+      const firstScript = document.getElementsByTagName('script')[0];
+      firstScript.parentNode.insertBefore(ns, firstScript);
+    })();
+
+    async function renewToken() {
+      try {
+        const headers = {
+          'href': 'https://revanshasti.github.io/Hosting-sites/Authentication.html',
+          'Content-Type': 'application/json',
+          'x-token-expiry': TOKEN_EXPIRY,
+          'x-user-details': JSON.stringify(USER_DETAILS)
+        };
+
+        // Do not send the bot reference header when the ID is null or empty.
+        if (BOT_REF_ID !== null && String(BOT_REF_ID).trim() !== '') {
+          headers['x-bot-ref-id'] = String(BOT_REF_ID).trim();
+        }
+
+        const response = await fetch(
+          'https://chatapps-qa-a.netomi.com/api/fetchJWT',
+          {
+            method: 'POST',
+            headers: headers
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Token API failed: ' + response.status);
+        }
+
+        const data = await response.json();
+
+        if (!data.token) {
+          throw new Error('No token returned from API');
+        }
+
+        return data.token;
+      } catch (error) {
+        console.error('Token refresh failed:', error);
+        return '';
+      }
+    }
+
+    async function handleAuth() {
+      // Prevent duplicate refresh intervals.
+      if (refreshIntervalId !== null) {
+        clearInterval(refreshIntervalId);
+        refreshIntervalId = null;
+      }
+
+      if (!window.NETOMI_WEB_WIDGET || !window.NETOMI_WEB_WIDGET.authModule) {
+        console.error('Netomi authentication module is not available yet.');
+        return;
+      }
+
+      // Get the initial token.
+      const token = await renewToken();
+
+      if (!token) {
+        console.error('Authentication failed: token not received');
+        return;
+      }
+
+      // Initial login.
+      try {
+        window.NETOMI_WEB_WIDGET.authModule.login(token);
+        console.log('Authentication successful');
+        console.log('Token expiry: ' + TOKEN_EXPIRY);
+      } catch (error) {
+        console.error('Initial Netomi login failed:', error);
+        return;
+      }
+
+      // Refresh the token every 50 seconds.
+      refreshIntervalId = setInterval(() => {
+        window.NETOMI_WEB_WIDGET.authModule.jwtAuth(
+          async function (sendTokenToNetomi) {
+            const newToken = await renewToken();
+
+            if (newToken) {
+              sendTokenToNetomi(newToken, handleAuthError);
+              console.log('JWT refreshed:', new Date().toLocaleTimeString());
+            } else {
+              console.error('JWT refresh failed');
+            }
+          }
+        );
+      }, REFRESH_INTERVAL);
+    }
+
+    function handleAuthError() {
+      console.error('Netomi authentication error');
+    }
+
+    function endAuth() {
+      // Stop token refresh.
+      if (refreshIntervalId !== null) {
+        clearInterval(refreshIntervalId);
+        refreshIntervalId = null;
+      }
+
+      // Logout.
+      if (
+        window.NETOMI_WEB_WIDGET &&
+        window.NETOMI_WEB_WIDGET.authModule
+      ) {
+        window.NETOMI_WEB_WIDGET.authModule.logout();
+      }
+
+      console.log('Authentication cleared');
+    }
+  </script>
 </body>
 </html>
